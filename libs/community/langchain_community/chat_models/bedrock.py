@@ -91,6 +91,18 @@ def _format_anthropic_messages(
     """
     system: Optional[str] = None
     formatted_messages: List[Dict] = []
+    
+    # A little bit hack for streamlit conversation history format mismatch
+    for i, message in enumerate(messages):
+        if isinstance(message.content, list):
+            if "role" in message.content[0].keys():
+                if message.type == "ai":
+                    message = AIMessage(message.content[0]["content"])
+                    messages[i] = message
+                if message.type == "human":
+                    message = HumanMessage(message.content[0]["content"])
+                    messages[i] = message
+    
     for i, message in enumerate(messages):
         if message.type == "system":
             if i != 0:
